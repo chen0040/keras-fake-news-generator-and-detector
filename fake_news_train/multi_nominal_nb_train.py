@@ -3,7 +3,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
-from fake_news_train.plots import plot_confusion_matrix
+from fake_news_train.utils import plot_confusion_matrix, most_informative_feature_for_binary_classification
 
 def main():
     data_dir_path = './data'
@@ -37,6 +37,7 @@ def main():
     print("accuracy:   %0.3f" % score)
     cm = metrics.confusion_matrix(y_test, pred, labels=['FAKE', 'REAL'])
     plot_confusion_matrix(cm, classes=['FAKE', 'REAL'])
+    most_informative_feature_for_binary_classification(tfidf_vectorizer, clf, n=30)
 
 
 if __name__ == '__main__':
