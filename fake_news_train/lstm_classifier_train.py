@@ -22,9 +22,11 @@ def main():
     config = fit_input_text(df['text'])
     config['num_target_tokens'] = 2
 
+    print(config)
+
     classifier = LstmClassifier(config)
 
-    Xtrain, Ytrain, Xtest, Ytest = train_test_split(df['text'], y, test_size=0.2, random_state=42)
+    Xtrain, Xtest, Ytrain, Ytest = train_test_split(df['text'], y, test_size=0.2, random_state=42)
 
     classifier.fit(Xtrain, Ytrain, Xtest, Ytest)
 

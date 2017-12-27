@@ -4,6 +4,7 @@ from keras.layers.recurrent import LSTM
 from keras.preprocessing.sequence import pad_sequences
 from keras.callbacks import ModelCheckpoint
 from keras.utils import np_utils
+import nltk
 from collections import Counter
 import numpy as np
 
@@ -11,16 +12,17 @@ EMBEDDING_SIZE = 100
 BATCH_SIZE = 64
 VERBOSE = 1
 EPOCHS = 20
-MAX_VOCAB_SIZE = 10000
+MAX_VOCAB_SIZE = 5000
 
 
 def fit_input_text(X):
     input_counter = Counter()
     max_seq_length = 0
     for line in X:
-        max_seq_length = max(max_seq_length, len(line))
-        for word in line:
-            input_counter[word.lower()] += 1
+        text = [word.lower() for word in nltk.word_tokenize(line)]
+        max_seq_length = max(max_seq_length, len(text))
+        for word in text:
+            input_counter[word] += 1
     word2idx = dict()
     for idx, word in enumerate(input_counter.most_common(MAX_VOCAB_SIZE)):
         word2idx[word[0]] = idx + 2
