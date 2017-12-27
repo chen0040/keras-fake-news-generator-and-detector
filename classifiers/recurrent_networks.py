@@ -13,16 +13,17 @@ BATCH_SIZE = 64
 VERBOSE = 1
 EPOCHS = 20
 MAX_VOCAB_SIZE = 3000
-MAX_INPUT_SEQ_LENGTH = 3000
+MAX_INPUT_SEQ_LENGTH = 2000
 
 
 def fit_input_text(X):
     input_counter = Counter()
     max_seq_length = 0
     for line in X:
-        text = [word.lower() for word in nltk.word_tokenize(line)]
-        max_seq_length = max(max_seq_length, len(text))
-    max_seq_length = min(MAX_INPUT_SEQ_LENGTH, max_seq_length)
+        max_seq_length = max(max_seq_length, len(nltk.word_tokenize(line)))
+        if max_seq_length >= MAX_INPUT_SEQ_LENGTH:
+            max_seq_length = MAX_INPUT_SEQ_LENGTH
+            break
     for line in X:
         text = [word.lower() for word in nltk.word_tokenize(line)]
         if len(text) > max_seq_length:
@@ -30,7 +31,7 @@ def fit_input_text(X):
         for word in text:
             input_counter[word] += 1
     word2idx = dict()
-    
+
     for idx, word in enumerate(input_counter.most_common(MAX_VOCAB_SIZE)):
         word2idx[word[0]] = idx + 2
     word2idx['PAD'] = 0
