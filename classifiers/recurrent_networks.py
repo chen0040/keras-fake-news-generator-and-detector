@@ -12,7 +12,7 @@ EMBEDDING_SIZE = 100
 BATCH_SIZE = 64
 VERBOSE = 1
 EPOCHS = 20
-MAX_VOCAB_SIZE = 5000
+MAX_VOCAB_SIZE = 3000
 
 
 def fit_input_text(X):
@@ -40,7 +40,6 @@ def fit_input_text(X):
 
 
 class LstmClassifier(object):
-
     num_input_tokens = None
     max_input_seq_length = None
     num_target_tokens = None
@@ -60,7 +59,8 @@ class LstmClassifier(object):
         self.config = config
 
         model = Sequential()
-        model.add(Embedding(input_dim=self.num_input_tokens, output_dim=EMBEDDING_SIZE, input_length=self.max_input_seq_length))
+        model.add(Embedding(input_dim=self.num_input_tokens, output_dim=EMBEDDING_SIZE,
+                            input_length=self.max_input_seq_length))
         model.add(LSTM(256, return_sequences=False, return_state=False, dropout=0.2))
         model.add(Dense(self.num_target_tokens))
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
@@ -82,16 +82,21 @@ class LstmClassifier(object):
     def transform_target_encoding(self, targets):
         return np_utils.to_categorical(targets, num_classes=self.num_target_tokens)
 
+    def generate_batch(self, x_samples, y_samples):
+        num_batches = len(x_samples) // BATCH_SIZE
+
+        while True:
+            for batchIdx in range(0, num_batches):
+                start = batchIdx * BATCH_SIZE
+                end = (batchIdx + 1) * BATCH_SIZE
+                yield self.transform_input_text(x_samples[start:end]), self.transform_target_encoding(
+                    y_samples[start:end])
+
     def fit(self, Xtrain, Ytrain, Xtest, Ytest, epochs=None, model_dir_path=None):
         if epochs is None:
             epochs = EPOCHS
         if model_dir_path is None:
             model_dir_path = './models'
-
-        Xtrain = self.transform_input_text(Xtrain)
-        Xtest = self.transform_input_text(Xtest)
-        Ytrain = self.transform_target_encoding(Ytrain)
-        Ytest = self.transform_target_encoding(Ytest)
 
         config_file_path = model_dir_path + '/' + self.model_name + '-config.npy'
         weight_file_path = model_dir_path + '/' + self.model_name + '-weights.h5'
@@ -99,7 +104,17 @@ class LstmClassifier(object):
         np.save(config_file_path, self.config)
         architecture_file_path = model_dir_path + '/' + self.model_name + '-architecture.json'
         open(architecture_file_path, 'w').write(self.model.to_json())
-        self.model.fit(Xtrain, Ytrain, batch_size=BATCH_SIZE, verbose=VERBOSE, epochs=epochs, validation_data=(Xtest, Ytest), callbacks=[checkpoint])
+
+        train_gen = self.generate_batch(Xtrain, Ytrain)
+        test_gen = self.generate_batch(Xtest, Ytest)
+
+        train_num_batches = len(Xtrain) // BATCH_SIZE
+        test_num_batches = len(Xtest) // BATCH_SIZE
+
+        history = self.model.fit_generator(generator=train_gen, steps_per_epoch=train_num_batches,
+                                           epochs=EPOCHS,
+                                           verbose=1, validation_data=test_gen, validation_steps=test_num_batches,
+                                           callbacks=[checkpoint])
         self.model.save_weights(weight_file_path)
 
     def predict(self, x):
