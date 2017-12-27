@@ -20,6 +20,7 @@ def main():
     df.drop("label", axis=1)
 
     config = fit_input_text(df['text'])
+    config['num_target_tokens'] = 2
 
     classifier = LstmClassifier(config)
 

@@ -2,6 +2,7 @@ from keras.models import Sequential
 from keras.layers import Embedding, Dense
 from keras.layers.recurrent import LSTM
 from keras.preprocessing.sequence import pad_sequences
+from keras.callbacks import ModelCheckpoint
 from keras.utils import np_utils
 from collections import Counter
 import numpy as np
@@ -32,6 +33,7 @@ def fit_input_text(X):
     config['idx2word'] = idx2word
     config['num_input_tokens'] = num_input_tokens
     config['max_input_seq_length'] = max_seq_length
+
     return config
 
 
@@ -43,18 +45,23 @@ class LstmClassifier(object):
     word2idx = None
     idx2word = None
     model = None
+    model_name = None
+    config = None
 
     def __init__(self, config):
-        self.num_input_tokens = config['max_input_tokens']
+        self.num_input_tokens = config['num_input_tokens']
         self.max_input_seq_length = config['max_input_seq_length']
         self.num_target_tokens = config['num_target_tokens']
         self.word2idx = config['word2idx']
         self.idx2word = config['idx2word']
+        self.model_name = 'lstm'
+        self.config = config
 
         model = Sequential()
         model.add(Embedding(input_dim=self.num_input_tokens, output_dim=EMBEDDING_SIZE, input_length=self.max_input_seq_length))
         model.add(LSTM(256, return_sequences=False, return_state=False, dropout=0.2))
         model.add(Dense(self.num_target_tokens))
+        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
         self.model = model
 
     def transform_input_text(self, texts):
@@ -73,16 +80,25 @@ class LstmClassifier(object):
     def transform_target_encoding(self, targets):
         return np_utils.to_categorical(targets, num_classes=self.num_target_tokens)
 
-    def fit(self, Xtrain, Ytrain, Xtest, Ytest, epochs=None):
+    def fit(self, Xtrain, Ytrain, Xtest, Ytest, epochs=None, model_dir_path=None):
         if epochs is None:
             epochs = EPOCHS
+        if model_dir_path is None:
+            model_dir_path = './models'
 
         Xtrain = self.transform_input_text(Xtrain)
         Xtest = self.transform_input_text(Xtest)
         Ytrain = self.transform_target_encoding(Ytrain)
         Ytest = self.transform_target_encoding(Ytest)
 
-        self.model.fit(Xtrain, Ytrain, batch_size=BATCH_SIZE, verbose=VERBOSE, epochs=epochs, validation_data=(Xtest, Ytest))
+        config_file_path = model_dir_path + '/' + self.model_name + '-config.npy'
+        weight_file_path = model_dir_path + '/' + self.model_name + '-weights.h5'
+        checkpoint = ModelCheckpoint(weight_file_path)
+        np.save(config_file_path, self.config)
+        architecture_file_path = model_dir_path + '/' + self.model_name + '-architecture.json'
+        open(architecture_file_path, 'w').write(self.model.to_json())
+        self.model.fit(Xtrain, Ytrain, batch_size=BATCH_SIZE, verbose=VERBOSE, epochs=epochs, validation_data=(Xtest, Ytest), callbacks=[checkpoint])
+        self.model.save_weights(weight_file_path)
 
     def predict(self, x):
         Xtest = self.transform_input_text([x])
