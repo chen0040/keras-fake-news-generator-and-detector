@@ -70,7 +70,7 @@ class LstmClassifier(object):
         temp = []
         for line in texts:
             x = []
-            for word in line:
+            for word in nltk.word_tokenize(line.lower()):
                 wid = 1
                 if word in self.word2idx:
                     wid = self.word2idx[word]
