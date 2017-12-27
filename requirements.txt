@@ -3,3 +3,5 @@ scikit-learn
 scipy
 numpy
 matplotlib
+keras
+tensorflow
