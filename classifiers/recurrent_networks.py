@@ -13,6 +13,7 @@ BATCH_SIZE = 64
 VERBOSE = 1
 EPOCHS = 20
 MAX_VOCAB_SIZE = 3000
+MAX_INPUT_SEQ_LENGTH = 3000
 
 
 def fit_input_text(X):
@@ -21,9 +22,15 @@ def fit_input_text(X):
     for line in X:
         text = [word.lower() for word in nltk.word_tokenize(line)]
         max_seq_length = max(max_seq_length, len(text))
+    max_seq_length = min(MAX_INPUT_SEQ_LENGTH, max_seq_length)
+    for line in X:
+        text = [word.lower() for word in nltk.word_tokenize(line)]
+        if len(text) > max_seq_length:
+            text = text[0:max_seq_length]
         for word in text:
             input_counter[word] += 1
     word2idx = dict()
+    
     for idx, word in enumerate(input_counter.most_common(MAX_VOCAB_SIZE)):
         word2idx[word[0]] = idx + 2
     word2idx['PAD'] = 0
@@ -75,6 +82,8 @@ class LstmClassifier(object):
                 if word in self.word2idx:
                     wid = self.word2idx[word]
                 x.append(wid)
+                if len(x) >= self.max_input_seq_length:
+                    break
             temp.append(x)
         texts = pad_sequences(temp, maxlen=self.max_input_seq_length)
         return texts
