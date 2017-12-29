@@ -1,6 +1,6 @@
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
-from fake_news_utility.glove_loader import GLOVE_EMBEDDING_SIZE, load_glove
+from fake_news.fake_news_utility.glove_loader import GLOVE_EMBEDDING_SIZE, load_glove
 from keras.utils import np_utils
 from keras.callbacks import ModelCheckpoint
 import numpy as np

@@ -3,8 +3,8 @@ from __future__ import print_function
 from sklearn import metrics
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from fake_news_train.utils import plot_confusion_matrix
-from fake_news_classifiers.recurrent_networks import LstmClassifier
+from fake_news.fake_news_train.utils import plot_confusion_matrix
+from fake_news.fake_news_classifiers.recurrent_networks import LstmClassifier
 import numpy as np
 
 

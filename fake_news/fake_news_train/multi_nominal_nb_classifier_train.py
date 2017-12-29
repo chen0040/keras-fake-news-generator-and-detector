@@ -3,7 +3,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
-from fake_news_train.utils import plot_confusion_matrix, most_informative_feature_for_binary_classification
+from fake_news.fake_news_train.utils import plot_confusion_matrix, most_informative_feature_for_binary_classification
 
 def main():
     data_dir_path = './data'
