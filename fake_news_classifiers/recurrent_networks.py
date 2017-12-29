@@ -1,10 +1,11 @@
+from __future__ import print_function
+
 from keras.models import Sequential
-from keras.layers import Embedding, Dense
+from keras.layers import Embedding, Dense, SpatialDropout1D
 from keras.layers.recurrent import LSTM
 from keras.preprocessing.sequence import pad_sequences
 from keras.callbacks import ModelCheckpoint
 from keras.utils import np_utils
-import nltk
 from collections import Counter
 import numpy as np
 
@@ -12,24 +13,23 @@ EMBEDDING_SIZE = 100
 BATCH_SIZE = 64
 VERBOSE = 1
 EPOCHS = 20
-MAX_VOCAB_SIZE = 3000
-MAX_INPUT_SEQ_LENGTH = 300
+MAX_VOCAB_SIZE = 4000
+MAX_INPUT_SEQ_LENGTH = 4000
 
 
 def fit_input_text(X):
     input_counter = Counter()
     max_seq_length = 0
     for line in X:
-        max_seq_length = max(max_seq_length, len(nltk.word_tokenize(line)))
-        if max_seq_length >= MAX_INPUT_SEQ_LENGTH:
-            max_seq_length = MAX_INPUT_SEQ_LENGTH
-            break
-    for line in X:
-        text = [word.lower() for word in nltk.word_tokenize(line)]
-        if len(text) > max_seq_length:
-            text = text[0:max_seq_length]
+        text = [word.lower() for word in line.split(' ')]
+        seq_length = len(text)
+        if seq_length > MAX_INPUT_SEQ_LENGTH:
+            text = text[0:MAX_INPUT_SEQ_LENGTH]
+            seq_length = len(text)
         for word in text:
             input_counter[word] += 1
+        max_seq_length = max(max_seq_length, seq_length)
+
     word2idx = dict()
 
     for idx, word in enumerate(input_counter.most_common(MAX_VOCAB_SIZE)):
@@ -69,16 +69,17 @@ class LstmClassifier(object):
         model = Sequential()
         model.add(Embedding(input_dim=self.num_input_tokens, output_dim=EMBEDDING_SIZE,
                             input_length=self.max_input_seq_length))
-        model.add(LSTM(256, return_sequences=False, return_state=False, dropout=0.2))
-        model.add(Dense(self.num_target_tokens))
-        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        model.add(SpatialDropout1D(0.2))
+        model.add(LSTM(units=64, dropout=0.2, recurrent_dropout=0.2))
+        model.add(Dense(self.num_target_tokens, activation='softmax'))
+        model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
         self.model = model
 
     def transform_input_text(self, texts):
         temp = []
         for line in texts:
             x = []
-            for word in nltk.word_tokenize(line.lower()):
+            for word in line.lower().split(' '):
                 wid = 1
                 if word in self.word2idx:
                     wid = self.word2idx[word]
@@ -86,8 +87,10 @@ class LstmClassifier(object):
                 if len(x) >= self.max_input_seq_length:
                     break
             temp.append(x)
-        texts = pad_sequences(temp, maxlen=self.max_input_seq_length)
-        return texts
+        temp = pad_sequences(temp, maxlen=self.max_input_seq_length)
+
+        print(temp.shape)
+        return temp
 
     def transform_target_encoding(self, targets):
         return np_utils.to_categorical(targets, num_classes=self.num_target_tokens)
@@ -99,8 +102,7 @@ class LstmClassifier(object):
             for batchIdx in range(0, num_batches):
                 start = batchIdx * BATCH_SIZE
                 end = (batchIdx + 1) * BATCH_SIZE
-                yield self.transform_input_text(x_samples[start:end]), self.transform_target_encoding(
-                    y_samples[start:end])
+                yield x_samples[start:end], y_samples[start:end]
 
     def fit(self, Xtrain, Ytrain, Xtest, Ytest, epochs=None, model_dir_path=None):
         if epochs is None:
@@ -115,6 +117,12 @@ class LstmClassifier(object):
         architecture_file_path = model_dir_path + '/' + self.model_name + '-architecture.json'
         open(architecture_file_path, 'w').write(self.model.to_json())
 
+        Ytrain = self.transform_target_encoding(Ytrain)
+        Ytest = self.transform_target_encoding(Ytest)
+
+        Xtrain = self.transform_input_text(Xtrain)
+        Xtest = self.transform_input_text(Xtest)
+
         train_gen = self.generate_batch(Xtrain, Ytrain)
         test_gen = self.generate_batch(Xtest, Ytest)
 
@@ -122,8 +130,8 @@ class LstmClassifier(object):
         test_num_batches = len(Xtest) // BATCH_SIZE
 
         history = self.model.fit_generator(generator=train_gen, steps_per_epoch=train_num_batches,
-                                           epochs=EPOCHS,
-                                           verbose=1, validation_data=test_gen, validation_steps=test_num_batches,
+                                           epochs=epochs,
+                                           verbose=VERBOSE, validation_data=test_gen, validation_steps=test_num_batches,
                                            callbacks=[checkpoint])
         self.model.save_weights(weight_file_path)
 

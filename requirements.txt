@@ -6,3 +6,4 @@ scipy
 numpy
 nltk
 matplotlib
+h5py
