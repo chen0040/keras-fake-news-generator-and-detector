@@ -8,6 +8,7 @@ __pycache__/
 
 .idea/
 
+fake_news_train/very_large_data
 
 # Distribution / packaging
 .Python

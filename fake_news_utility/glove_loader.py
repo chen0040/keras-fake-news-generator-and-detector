@@ -5,7 +5,6 @@ import zipfile
 import numpy as np
 
 GLOVE_EMBEDDING_SIZE = 100
-GLOVE_MODEL = "very_large_data/glove.6B." + str(GLOVE_EMBEDDING_SIZE) + "d.txt"
 
 
 def reporthook(block_num, block_size, total_size):
@@ -21,13 +20,16 @@ def reporthook(block_num, block_size, total_size):
         sys.stderr.write("read %d\n" % (read_so_far,))
 
 
-def download_glove():
-    if not os.path.exists(GLOVE_MODEL):
+def download_glove(data_dir_path=None):
+    if data_dir_path is None:
+        data_dir_path = 'very_large_data'
+    glove_model_path = data_dir_path + "/glove.6B." + str(GLOVE_EMBEDDING_SIZE) + "d.txt"
+    if not os.path.exists(glove_model_path):
 
-        glove_zip = 'very_large_data/glove.6B.zip'
+        glove_zip = data_dir_path + '/glove.6B.zip'
 
-        if not os.path.exists('very_large_data'):
-            os.makedirs('very_large_data')
+        if not os.path.exists(data_dir_path):
+            os.makedirs(data_dir_path)
 
         if not os.path.exists(glove_zip):
             print('glove file does not exist, downloading from internet')
@@ -36,14 +38,17 @@ def download_glove():
 
         print('unzipping glove file')
         zip_ref = zipfile.ZipFile(glove_zip, 'r')
-        zip_ref.extractall('very_large_data')
+        zip_ref.extractall(data_dir_path)
         zip_ref.close()
 
 
-def load_glove():
-    download_glove()
+def load_glove(data_dir_path=None):
+    if data_dir_path is None:
+        data_dir_path = 'very_large_data'
+    download_glove(data_dir_path)
     _word2em = {}
-    file = open(GLOVE_MODEL, mode='rt', encoding='utf8')
+    glove_model_path = data_dir_path + "/glove.6B." + str(GLOVE_EMBEDDING_SIZE) + "d.txt"
+    file = open(glove_model_path, mode='rt', encoding='utf8')
     for line in file:
         words = line.strip().split()
         word = words[0]
