@@ -33,7 +33,7 @@ class GloveFeedforwardNet(object):
         self.config = config
 
         model = Sequential()
-        model.add(Dense(units=256, input_dim=GLOVE_EMBEDDING_SIZE, activation='relu'))
+        model.add(Dense(units=64, input_dim=GLOVE_EMBEDDING_SIZE, activation='relu'))
         model.add(Dropout(0.2))
         model.add(Dense(self.num_target_tokens, activation='softmax'))
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
