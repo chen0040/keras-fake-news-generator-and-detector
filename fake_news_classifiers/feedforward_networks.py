@@ -7,7 +7,7 @@ import numpy as np
 
 BATCH_SIZE = 64
 VERBOSE = 1
-EPOCHS = 10
+EPOCHS = 50
 MAX_SEQ_LENGTH = 2000
 
 
@@ -33,8 +33,8 @@ class GloveFeedforwardNet(object):
         self.config = config
 
         model = Sequential()
-        model.add(Dense(units=64, input_dim=GLOVE_EMBEDDING_SIZE, activation='relu'))
-        model.add(Dropout(0.3))
+        model.add(Dense(units=256, input_dim=GLOVE_EMBEDDING_SIZE, activation='relu'))
+        model.add(Dropout(0.2))
         model.add(Dense(self.num_target_tokens, activation='softmax'))
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
         self.model = model
@@ -46,9 +46,11 @@ class GloveFeedforwardNet(object):
         self.model.load_weights(weight_file_path)
 
     def transform_input_text(self, texts):
-        X = np.zeros(shape=(len(texts), GLOVE_EMBEDDING_SIZE))
-        for i in range(len(texts)):
-            text = texts[i].lower().split(' ')
+        record_count = len(texts)
+        X = np.zeros(shape=(record_count, GLOVE_EMBEDDING_SIZE))
+        print('records: ', record_count)
+        for i, line in enumerate(texts):
+            text = line.lower().split(' ')
             seq_length = min(len(text), MAX_SEQ_LENGTH)
             E = np.zeros(shape=(GLOVE_EMBEDDING_SIZE, seq_length))
             for j in range(seq_length):
