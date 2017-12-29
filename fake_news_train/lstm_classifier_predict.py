@@ -12,9 +12,8 @@ def main():
     np.random.seed(42)
     data_dir_path = './data'
     model_dir_path = './models'
-    model_name = 'lstm'
-    config_file_path = model_dir_path + '/' + model_name + '-config.npy'
-    weight_file_path = model_dir_path + '/' + model_name + '-weights.h5'
+    config_file_path = model_dir_path + '/' + LstmClassifier.model_name + '-config.npy'
+    weight_file_path = model_dir_path + '/' + LstmClassifier.model_name + '-weights.h5'
 
     print('loading csv file ...')
 

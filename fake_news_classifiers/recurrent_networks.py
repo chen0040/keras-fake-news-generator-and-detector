@@ -21,7 +21,7 @@ class LstmClassifier(object):
     word2idx = None
     idx2word = None
     model = None
-    model_name = None
+    model_name = 'lstm'
     config = None
 
     def __init__(self, config):
@@ -30,7 +30,6 @@ class LstmClassifier(object):
         self.num_target_tokens = config['num_target_tokens']
         self.word2idx = config['word2idx']
         self.idx2word = config['idx2word']
-        self.model_name = 'lstm'
         self.config = config
 
         model = Sequential()

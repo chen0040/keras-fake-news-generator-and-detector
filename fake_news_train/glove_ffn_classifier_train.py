@@ -3,7 +3,7 @@ from __future__ import print_function
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from fake_news_train.utils import plot_and_save_history
-from fake_news_classifiers.recurrent_networks import LstmClassifier
+from fake_news_classifiers.feedforward_networks import GloveFeedforwardNet
 from fake_news_classifiers.utils import fit_input_text
 import numpy as np
 
@@ -11,6 +11,7 @@ import numpy as np
 def main():
     np.random.seed(42)
     data_dir_path = './data'
+    very_large_data_dir_path = './very_large_data'
     report_dir_path = './reports'
 
     print('loading csv file ...')
@@ -33,7 +34,8 @@ def main():
 
     print('configuration extracted from input texts ...')
 
-    classifier = LstmClassifier(config)
+    classifier = GloveFeedforwardNet(config)
+    classifier.load_glove(very_large_data_dir_path)
 
     Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, Y, test_size=0.2, random_state=42)
 
@@ -43,7 +45,7 @@ def main():
     print('start fitting ...')
     history = classifier.fit(Xtrain, Ytrain, Xtest, Ytest)
 
-    history_plot_file_path = report_dir_path + '/' + LstmClassifier.model_name + '-history.png'
+    history_plot_file_path = report_dir_path + '/' + GloveFeedforwardNet.model_name + '-history.png'
     plot_and_save_history(history, classifier.model_name, history_plot_file_path)
 
 
