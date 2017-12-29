@@ -4,14 +4,17 @@ MAX_INPUT_SEQ_LENGTH = 500
 MAX_VOCAB_SIZE = 2000
 
 
-def fit_input_text(X):
+def fit_input_text(X, max_input_seq_length=None):
+    if max_input_seq_length is None:
+        max_input_seq_length = MAX_INPUT_SEQ_LENGTH
+
     input_counter = Counter()
     max_seq_length = 0
     for line in X:
         text = [word.lower() for word in line.split(' ')]
         seq_length = len(text)
-        if seq_length > MAX_INPUT_SEQ_LENGTH:
-            text = text[0:MAX_INPUT_SEQ_LENGTH]
+        if seq_length > max_input_seq_length:
+            text = text[0:max_input_seq_length]
             seq_length = len(text)
         for word in text:
             input_counter[word] += 1
