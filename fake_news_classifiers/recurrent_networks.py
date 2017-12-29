@@ -6,45 +6,12 @@ from keras.layers.recurrent import LSTM
 from keras.preprocessing.sequence import pad_sequences
 from keras.callbacks import ModelCheckpoint
 from keras.utils import np_utils
-from collections import Counter
 import numpy as np
 
 EMBEDDING_SIZE = 100
 BATCH_SIZE = 64
 VERBOSE = 1
-EPOCHS = 20
-MAX_VOCAB_SIZE = 4000
-MAX_INPUT_SEQ_LENGTH = 4000
-
-
-def fit_input_text(X):
-    input_counter = Counter()
-    max_seq_length = 0
-    for line in X:
-        text = [word.lower() for word in line.split(' ')]
-        seq_length = len(text)
-        if seq_length > MAX_INPUT_SEQ_LENGTH:
-            text = text[0:MAX_INPUT_SEQ_LENGTH]
-            seq_length = len(text)
-        for word in text:
-            input_counter[word] += 1
-        max_seq_length = max(max_seq_length, seq_length)
-
-    word2idx = dict()
-
-    for idx, word in enumerate(input_counter.most_common(MAX_VOCAB_SIZE)):
-        word2idx[word[0]] = idx + 2
-    word2idx['PAD'] = 0
-    word2idx['UNK'] = 1
-    idx2word = dict([(idx, word) for word, idx in word2idx.items()])
-    num_input_tokens = len(word2idx)
-    config = dict()
-    config['word2idx'] = word2idx
-    config['idx2word'] = idx2word
-    config['num_input_tokens'] = num_input_tokens
-    config['max_input_seq_length'] = max_seq_length
-
-    return config
+EPOCHS = 10
 
 
 class LstmClassifier(object):
@@ -74,6 +41,9 @@ class LstmClassifier(object):
         model.add(Dense(self.num_target_tokens, activation='softmax'))
         model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
         self.model = model
+
+    def load_weights(self, weight_file_path):
+        self.model.load_weights(weight_file_path)
 
     def transform_input_text(self, texts):
         temp = []
@@ -134,8 +104,20 @@ class LstmClassifier(object):
                                            verbose=VERBOSE, validation_data=test_gen, validation_steps=test_num_batches,
                                            callbacks=[checkpoint])
         self.model.save_weights(weight_file_path)
+        return history
 
     def predict(self, x):
-        Xtest = self.transform_input_text([x])
-        preds = self.model.predict(Xtest)[0]
-        return np.argmax(preds)
+        is_str = False
+        if type(x) is str:
+            is_str = True
+            x = [x]
+
+        Xtest = self.transform_input_text(x)
+
+        preds = self.model.predict(Xtest)
+        if is_str:
+            preds = preds[0]
+            return np.argmax(preds)
+        else:
+            return np.argmax(preds, axis=1)
+
