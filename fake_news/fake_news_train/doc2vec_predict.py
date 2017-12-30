@@ -24,14 +24,16 @@ def main():
 
     config = np.load(Doc2Vec.get_config_file_path(model_dir_path=model_dir_path)).item()
 
-    classifier = Doc2Vec(config)
-    classifier.load_glove(very_large_data_dir_path)
+    doc_encoder = Doc2Vec(config)
+    doc_encoder.load_glove(very_large_data_dir_path)
 
     print('start predicting ...')
 
+    print('output dimension: ', doc_encoder.get_doc_vec_length())
+
     for x in X[0:10]:
-        encoded = classifier.predict(x)
-        print(encoded)
+        encoded = doc_encoder.predict(x)
+        print('encoded doc length: ', len(encoded))
 
 
 if __name__ == '__main__':

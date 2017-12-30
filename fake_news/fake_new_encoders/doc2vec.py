@@ -77,7 +77,6 @@ class Doc2Vec(object):
             temp.append(x)
         temp = pad_sequences(temp, maxlen=self.max_input_seq_length)
 
-        print(temp.shape)
         return temp
 
     @staticmethod
@@ -134,9 +133,13 @@ class Doc2Vec(object):
 
         preds = self.model.predict(Xtest)
         if is_str:
-            preds = preds[0].flatten()
+            preds = preds.flatten()
+            return preds
         else:
             result = []
             for line in preds:
                 result.append(line.flatten())
             return result
+
+    def get_doc_vec_length(self):
+        return self.max_input_seq_length * self.target_seq_length
