@@ -14,15 +14,18 @@ VERBOSE = 1
 EPOCHS = 10
 
 
+def generate_batch(x_samples, y_samples):
+    num_batches = len(x_samples) // BATCH_SIZE
+
+    while True:
+        for batchIdx in range(0, num_batches):
+            start = batchIdx * BATCH_SIZE
+            end = (batchIdx + 1) * BATCH_SIZE
+            yield x_samples[start:end], y_samples[start:end]
+
+
 class LstmClassifier(object):
-    num_input_tokens = None
-    max_input_seq_length = None
-    num_target_tokens = None
-    word2idx = None
-    idx2word = None
-    model = None
     model_name = 'lstm'
-    config = None
 
     def __init__(self, config):
         self.num_input_tokens = config['num_input_tokens']
@@ -64,15 +67,6 @@ class LstmClassifier(object):
     def transform_target_encoding(self, targets):
         return np_utils.to_categorical(targets, num_classes=self.num_target_tokens)
 
-    def generate_batch(self, x_samples, y_samples):
-        num_batches = len(x_samples) // BATCH_SIZE
-
-        while True:
-            for batchIdx in range(0, num_batches):
-                start = batchIdx * BATCH_SIZE
-                end = (batchIdx + 1) * BATCH_SIZE
-                yield x_samples[start:end], y_samples[start:end]
-
     def fit(self, Xtrain, Ytrain, Xtest, Ytest, epochs=None, model_dir_path=None):
         if epochs is None:
             epochs = EPOCHS
@@ -92,8 +86,8 @@ class LstmClassifier(object):
         Xtrain = self.transform_input_text(Xtrain)
         Xtest = self.transform_input_text(Xtest)
 
-        train_gen = self.generate_batch(Xtrain, Ytrain)
-        test_gen = self.generate_batch(Xtest, Ytest)
+        train_gen = generate_batch(Xtrain, Ytrain)
+        test_gen = generate_batch(Xtest, Ytest)
 
         train_num_batches = len(Xtrain) // BATCH_SIZE
         test_num_batches = len(Xtest) // BATCH_SIZE

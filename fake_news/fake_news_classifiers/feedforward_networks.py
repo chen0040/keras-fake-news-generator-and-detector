@@ -22,11 +22,7 @@ def generate_batch(x_samples, y_samples):
 
 
 class GloveFeedforwardNet(object):
-    num_target_tokens = None
-    model = None
     model_name = 'glove-feed-forward'
-    config = None
-    word2em = None
 
     def __init__(self, config):
         self.num_target_tokens = config['num_target_tokens']
@@ -38,6 +34,8 @@ class GloveFeedforwardNet(object):
         model.add(Dense(self.num_target_tokens, activation='softmax'))
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
         self.model = model
+
+        self.word2em = dict()
 
     def load_glove(self, data_dir_path):
         self.word2em = load_glove(data_dir_path)

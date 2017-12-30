@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from fake_news.fake_news_train.utils import plot_and_save_history
 from fake_news.fake_news_classifiers.recurrent_networks import LstmClassifier
-from fake_news.fake_news_classifiers.utils import fit_input_text
+from fake_news.fake_news_utility.fake_news_loader import fit_input_text
 import numpy as np
 
 
