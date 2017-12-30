@@ -118,10 +118,7 @@ class Doc2Vec(object):
             x = [x]
 
         Xtest = self.transform_input_text(x)
-
         preds = self.model.predict(Xtest)
         if is_str:
             preds = preds[0]
-            return np.argmax(preds)
-        else:
-            return np.argmax(preds, axis=1)
+        return preds
