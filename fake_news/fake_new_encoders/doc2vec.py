@@ -43,14 +43,14 @@ class Doc2Vec(object):
         model.compile(optimizer="sgd", loss="mse")
         self.model = model
 
-        self.embedding = dict()
+        self.embedding = np.zeros((len(self.word2idx), GLOVE_EMBEDDING_SIZE))
 
     def load_glove(self, data_dir_path):
         word2em = load_glove(data_dir_path)
 
         unk_embed = np.random.uniform(-1, 1, GLOVE_EMBEDDING_SIZE)
-        embedding = dict()
-        for word, idx in word2em.items():
+        embedding = np.zeros((len(self.word2idx), GLOVE_EMBEDDING_SIZE))
+        for word, idx in self.word2idx.items():
             vec = unk_embed
             if word in word2em:
                 vec = word2em[word]
@@ -58,6 +58,7 @@ class Doc2Vec(object):
 
         embedding[self.word2idx["PAD"]] = np.zeros(shape=GLOVE_EMBEDDING_SIZE)
         embedding[self.word2idx["UNK"]] = unk_embed
+        self.embedding = embedding
 
     def load_weights(self, weight_file_path):
         self.model.load_weights(weight_file_path)
