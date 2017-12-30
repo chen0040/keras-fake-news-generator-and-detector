@@ -80,17 +80,29 @@ class Doc2Vec(object):
         print(temp.shape)
         return temp
 
+    @staticmethod
+    def get_config_file_path(model_dir_path):
+        return model_dir_path + '/' + Doc2Vec.model_name + '-config.npy'
+
+    @staticmethod
+    def get_weight_file_path(model_dir_path):
+        return model_dir_path + '/' + Doc2Vec.model_name + '-weights.h5'
+
+    @staticmethod
+    def get_architecture_file_path(model_dir_path):
+        return model_dir_path + '/' + Doc2Vec.model_name + '-architecture.json'
+
     def fit(self, Xtrain, Xtest, epochs=None, model_dir_path=None):
         if epochs is None:
             epochs = EPOCHS
         if model_dir_path is None:
             model_dir_path = './models'
 
-        config_file_path = model_dir_path + '/' + self.model_name + '-config.npy'
-        weight_file_path = model_dir_path + '/' + self.model_name + '-weights.h5'
+        config_file_path = Doc2Vec.get_config_file_path(model_dir_path)
+        weight_file_path = Doc2Vec.get_weight_file_path(model_dir_path)
         checkpoint = ModelCheckpoint(weight_file_path)
         np.save(config_file_path, self.config)
-        architecture_file_path = model_dir_path + '/' + self.model_name + '-architecture.json'
+        architecture_file_path = Doc2Vec.get_architecture_file_path(model_dir_path)
         open(architecture_file_path, 'w').write(self.model.to_json())
 
         Xtrain = self.transform_input_text(Xtrain)
@@ -118,7 +130,13 @@ class Doc2Vec(object):
             x = [x]
 
         Xtest = self.transform_input_text(x)
+        Xtest = self.embedding[Xtest]
+
         preds = self.model.predict(Xtest)
         if is_str:
-            preds = preds[0]
-        return preds
+            preds = preds[0].flatten()
+        else:
+            result = []
+            for line in preds:
+                result.append(line.flatten())
+            return result
