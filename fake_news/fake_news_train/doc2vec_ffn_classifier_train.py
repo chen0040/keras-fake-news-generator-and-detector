@@ -38,7 +38,7 @@ def main():
     print('testing size: ', len(Xtest))
 
     print('start fitting ...')
-    history = classifier.fit(Xtrain, Ytrain, Xtest, Ytest)
+    history = classifier.fit(Xtrain, Ytrain, Xtest, Ytest, epochs=100)
 
     history_plot_file_path = report_dir_path + '/' + Doc2VecFeedforwardNet.model_name + '-history.png'
     plot_and_save_history(history, classifier.model_name, history_plot_file_path)

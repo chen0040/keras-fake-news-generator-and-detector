@@ -7,8 +7,6 @@ from fake_news.fake_new_encoders.doc2vec import Doc2Vec, DOC2VEC_MAX_SEQ_LENGTH,
 import numpy as np
 
 
-
-
 def main():
     np.random.seed(42)
     data_dir_path = './data'
