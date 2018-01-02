@@ -6,9 +6,11 @@ from keras.layers.recurrent import LSTM
 from keras.preprocessing.sequence import pad_sequences
 from fake_news.fake_news_utility.glove_loader import GLOVE_EMBEDDING_SIZE, load_glove
 
-LATENT_SIZE = 512
+LATENT_SIZE = 256
 BATCH_SIZE = 64
 EPOCHS = 10
+DOC2VEC_MAX_SEQ_LENGTH = 80
+DOC2VEC_MAX_VOCAB_SIZE = 2000
 
 
 def sentence_generator(X, embeddings, batch_size):

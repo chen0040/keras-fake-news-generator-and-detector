@@ -6,7 +6,6 @@ from fake_news.fake_news_utility.fake_news_loader import fit_input_text
 from fake_news.fake_new_encoders.doc2vec import Doc2Vec
 import numpy as np
 
-MAX_INPUT_SEQ_LENGTH = 200
 MAX_VOCAB_SIZE = 2000
 
 

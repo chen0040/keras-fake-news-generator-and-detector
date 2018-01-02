@@ -3,11 +3,10 @@ from __future__ import print_function
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from fake_news.fake_news_utility.fake_news_loader import fit_input_text
-from fake_news.fake_new_encoders.doc2vec import Doc2Vec
+from fake_news.fake_new_encoders.doc2vec import Doc2Vec, DOC2VEC_MAX_SEQ_LENGTH, DOC2VEC_MAX_VOCAB_SIZE
 import numpy as np
 
-MAX_INPUT_SEQ_LENGTH = 200
-MAX_VOCAB_SIZE = 2000
+
 
 
 def main():
@@ -21,8 +20,8 @@ def main():
     df = pd.read_csv(data_dir_path + "/fake_or_real_news.csv")
     X = df['text']
 
-    config = fit_input_text(X, max_input_seq_length=MAX_INPUT_SEQ_LENGTH, max_vocab_size=MAX_VOCAB_SIZE)
-    config['max_vocab_size'] = MAX_VOCAB_SIZE
+    config = fit_input_text(X, max_input_seq_length=DOC2VEC_MAX_SEQ_LENGTH, max_vocab_size=DOC2VEC_MAX_VOCAB_SIZE)
+    config['max_vocab_size'] = DOC2VEC_MAX_VOCAB_SIZE
 
     classifier = Doc2Vec(config)
     classifier.load_glove(very_large_data_dir_path)
