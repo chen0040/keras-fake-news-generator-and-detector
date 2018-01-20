@@ -8,7 +8,7 @@ __pycache__/
 
 .idea/
 
-fake_news/training/very_large_data
+fake_news/demo/very_large_data
 
 # Distribution / packaging
 .Python
