@@ -4,7 +4,7 @@ from keras.callbacks import ModelCheckpoint
 from keras.layers import Bidirectional, RepeatVector
 from keras.layers.recurrent import LSTM
 from keras.preprocessing.sequence import pad_sequences
-from fake_news.library.fake_news_utility.glove_loader import GLOVE_EMBEDDING_SIZE, load_glove
+from fake_news.library.utility.glove_loader import GLOVE_EMBEDDING_SIZE, load_glove
 
 LATENT_SIZE = 256
 BATCH_SIZE = 64

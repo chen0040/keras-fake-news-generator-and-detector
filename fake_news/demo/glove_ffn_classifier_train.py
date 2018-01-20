@@ -2,9 +2,9 @@ from __future__ import print_function
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from fake_news.library.fake_news_utility.plot_utils import plot_and_save_history
-from fake_news.library.fake_news_classifiers.feedforward_networks import GloveFeedforwardNet, MAX_SEQ_LENGTH
-from fake_news.library.fake_news_utility.fake_news_loader import fit_input_text
+from fake_news.library.utility.plot_utils import plot_and_save_history
+from fake_news.library.classifiers.feedforward_networks import GloveFeedforwardNet, MAX_SEQ_LENGTH
+from fake_news.library.utility.news_loader import fit_input_text
 import numpy as np
 
 

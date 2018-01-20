@@ -8,7 +8,7 @@ The deep learning models are implemented in the [fake_news/library] folder
 
 # Fake News Detector
 
-The following neural network models are implemented for fake new detector:
+The demo codes for neural network models implemented for fake new detector can be found in [fake_news/demo] and are listed bel:
 
 * LSTM recurrent network with embedding layer
     * training: run [fake_news/demo/lstm_classifier_train.py](fake_news/demo/lstm_classifier_train.py) to train and save the model

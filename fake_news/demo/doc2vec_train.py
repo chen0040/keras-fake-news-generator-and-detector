@@ -2,8 +2,8 @@ from __future__ import print_function
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from fake_news.library.fake_news_utility.fake_news_loader import fit_input_text
-from fake_news.library.fake_new_encoders.doc2vec import Doc2Vec, DOC2VEC_MAX_SEQ_LENGTH, DOC2VEC_MAX_VOCAB_SIZE
+from fake_news.library.utility.news_loader import fit_input_text
+from fake_news.library.encoders.doc2vec import Doc2Vec, DOC2VEC_MAX_SEQ_LENGTH, DOC2VEC_MAX_VOCAB_SIZE
 import numpy as np
 
 

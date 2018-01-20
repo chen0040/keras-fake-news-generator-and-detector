@@ -1,9 +1,9 @@
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
-from fake_news.library.fake_news_utility.glove_loader import GLOVE_EMBEDDING_SIZE, load_glove
+from fake_news.library.utility.glove_loader import GLOVE_EMBEDDING_SIZE, load_glove
 from keras.utils import np_utils
 from keras.callbacks import ModelCheckpoint
-from fake_news.library.fake_new_encoders.doc2vec import Doc2Vec
+from fake_news.library.encoders.doc2vec import Doc2Vec
 import numpy as np
 
 BATCH_SIZE = 64
