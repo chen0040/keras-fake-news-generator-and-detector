@@ -4,6 +4,8 @@ Fake news generator and detector using keras
 
 The fake news data is from [https://github.com/GeorgeMcIntire/fake_real_news_dataset](https://github.com/GeorgeMcIntire/fake_real_news_dataset)
 
+The deep learning models are implemented in the [fake_news/library] folder
+
 # Fake News Detector
 
 The following neural network models are implemented for fake new detector:
