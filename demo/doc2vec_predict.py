@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import pandas as pd
-from fake_news.library.encoders.doc2vec import Doc2Vec
+from keras_fake_news_detector.library.encoders.doc2vec import Doc2Vec
 import numpy as np
 
 MAX_VOCAB_SIZE = 2000

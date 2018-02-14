@@ -2,7 +2,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-setup(name='fake_news',
+setup(name='keras_fake_news_detector',
       version='0.0.1',
       description='Fake News Generator and Detector',
       author='Xianshun Chen',

@@ -8,8 +8,6 @@ __pycache__/
 
 .idea/
 
-fake_news/demo/very_large_data
-
 # Distribution / packaging
 .Python
 env/

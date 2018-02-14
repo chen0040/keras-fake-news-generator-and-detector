@@ -1,9 +1,9 @@
 from sklearn import metrics
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
-from fake_news.library.utility.plot_utils import plot_confusion_matrix, most_informative_feature_for_binary_classification
+from keras_fake_news_detector.library.utility.plot_utils import plot_confusion_matrix, most_informative_feature_for_binary_classification
 
 def main():
     data_dir_path = './data'
@@ -29,15 +29,15 @@ def main():
     # Transform the test set
     tfidf_test = tfidf_vectorizer.transform(X_test)
 
-    clf = MultinomialNB()
+    linear_clf = PassiveAggressiveClassifier(n_iter=50)
 
-    clf.fit(tfidf_train, y_train)
-    pred = clf.predict(tfidf_test)
+    linear_clf.fit(tfidf_train, y_train)
+    pred = linear_clf.predict(tfidf_test)
     score = metrics.accuracy_score(y_test, pred)
     print("accuracy:   %0.3f" % score)
     cm = metrics.confusion_matrix(y_test, pred, labels=['FAKE', 'REAL'])
     plot_confusion_matrix(cm, classes=['FAKE', 'REAL'])
-    most_informative_feature_for_binary_classification(tfidf_vectorizer, clf, n=30)
+    most_informative_feature_for_binary_classification(tfidf_vectorizer, linear_clf, n=30)
 
 
 if __name__ == '__main__':
